@@ -29,3 +29,29 @@
 
 * for PXT/microbit
 <script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
+
+#### tutorials
+
+IR receiver uses P16
+
+buzzer uses P0
+
+Ultrasonic uses P14(Trig) and P15(Echo)
+
+photoresistance uses P1
+
+F5-RGB-LED is controlled by ledPin4-6 of PCA9685
+
+WS2812 RGB-LED uses P8
+
+left Obstacle avoidance sensor uses P2
+
+right Obstacle avoidance sensor uses P11
+
+left check line sensor uses P12
+
+right check line sensor uses P13
+
+left motor is controlled by PCA9685 ledPin0(direction) and ledPin1(speed).
+
+right motor is controlled by PCA9685 ledPin2(direction) and ledPin3(speed).
