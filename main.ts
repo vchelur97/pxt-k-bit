@@ -13,10 +13,6 @@ enum COLOR {
     white,
     black
 }
-enum RGBLED {
-    left_side = 0,
-    right_side = 1
-}
 /**
  * use for infrared obstacle sensor
  */
@@ -37,10 +33,6 @@ enum MOTOR {
     A = 0,
     B = 1
 }
-enum MotorState {
-    stop = 0,
-    brake = 1
-}
 
 //% color="#ff6800" icon="\uf1b9" weight=15
 //% groups="['Motor', 'RGB-led', 'Neo-pixel', 'Sensor', 'Tone']"
@@ -48,7 +40,7 @@ namespace k_Bit {
     /**
      * use for control PCA9685
      */
-    const PCA9685_ADDRESS = 0x47;   //device address
+    const PCA9685_ADDRESS = 0x43;   //device address
     const MODE1 = 0x00;
     const MODE2 = 0x01;
     const SUBADR1 = 0x02;
@@ -141,15 +133,15 @@ namespace k_Bit {
                 break;
             case 2:  //turn left
                 setPwm(1, 0, speed_value);  //control speed : 0---4095
-                setPwm(0, 0, 500);
-                setPwm(3, 0, speed_value);  //control speed : 0---4095
-                setPwm(2, 0, 4095);
-                break;
-            case 3:  //turn right
-                setPwm(1, 0, speed_value);  //control speed : 0---4095
                 setPwm(0, 0, 4095);
                 setPwm(3, 0, speed_value);  //control speed : 0---4095
                 setPwm(2, 0, 500);
+                break;
+            case 3:  //turn right
+                setPwm(1, 0, speed_value);  //control speed : 0---4095
+                setPwm(0, 0, 500);
+                setPwm(3, 0, speed_value);  //control speed : 0---4095
+                setPwm(2, 0, 4095);
                 break;
             default: break;
         }
@@ -233,7 +225,7 @@ namespace k_Bit {
         if (!PCA9685_Initialized) {
             init_PCA9685();
         }
-        L_brightness = Math.map(br, 0, 255, 0, 4095);
+        L_brightness = Math.map(br, 0, 255, 4095, 0);
     }
     /**
      * set the rgb-led color via the color card
@@ -246,18 +238,18 @@ namespace k_Bit {
         }
 
         if (col == COLOR.red) {
-            setPwm(5, 0, 0);
+            setPwm(5, 0, 4095);
             setPwm(6, 0, L_brightness);
-            setPwm(4, 0, 0);
+            setPwm(4, 0, 4095);
             }
         if (col == COLOR.green) {
             setPwm(5, 0, L_brightness);
-            setPwm(6, 0, 0);
-            setPwm(4, 0, 0);
+            setPwm(6, 0, 4095);
+            setPwm(4, 0, 4095);
             }
         if (col == COLOR.blue) {
-            setPwm(5, 0, 0);
-            setPwm(6, 0, 0);
+            setPwm(5, 0, 4095);
+            setPwm(6, 0, 4095);
             setPwm(4, 0, L_brightness);
             }
         if (col == COLOR.white) {
@@ -266,9 +258,9 @@ namespace k_Bit {
             setPwm(4, 0, L_brightness);
         }
         if (col == COLOR.black) {
-            setPwm(5, 0, 0);
-            setPwm(6, 0, 0);
-            setPwm(4, 0, 0);
+            setPwm(5, 0, 4095);
+            setPwm(6, 0, 4095);
+            setPwm(4, 0, 4095);
         }
     }
     /**
@@ -282,9 +274,9 @@ namespace k_Bit {
             init_PCA9685();
         }
 
-        let R = Math.map(red, 0, 255, 0, L_brightness);
-        let G = Math.map(green, 0, 255, 0, L_brightness);
-        let B = Math.map(blue, 0, 255, 0, L_brightness);
+        let R = Math.map(red, 0, 255, 4095, L_brightness);
+        let G = Math.map(green, 0, 255, 4095, L_brightness);
+        let B = Math.map(blue, 0, 255, 4095, L_brightness);
 
         setPwm(6, 0, R);
         setPwm(5, 0, G);
@@ -300,34 +292,40 @@ namespace k_Bit {
             init_PCA9685();
         }
 
-        setPwm(6, 0, 0);
-        setPwm(5, 0, 0);
-        setPwm(4, 0, 0);
+        setPwm(6, 0, 4095);
+        setPwm(5, 0, 4095);
+        setPwm(4, 0, 4095);
     }
 
     /////////////////////////////////////////////////////
     /**
      * infrared obstacle sensor
      */
+    pins.setPull(DigitalPin.P2, PinPullMode.PullNone);
+    pins.setPull(DigitalPin.P11, PinPullMode.PullNone);
     //% block="$LR obstacle sensor "
     //% group="Sensor" weight=69
     export function obstacle(LR: OBS): number {
+        let val;
         if(LR == 0){  //left side
-            return pins.digitalReadPin(DigitalPin.P2);
+            val = pins.digitalReadPin(DigitalPin.P2);
         }
-        else  //right side
-            return pins.digitalReadPin(DigitalPin.P11);
-        
+        if(LR == 1){  //right side
+            val = pins.digitalReadPin(DigitalPin.P11);
+        }
+        return val;
     }
     /**
      * return 0b01 or 0b10
-     * 0b01 is the sensor on the right
-     * 0b10 is the sensor on the left
+     * 0b01 is the sensor on the left
+     * 0b10 is the sensor on the right
      */
+    pins.setPull(DigitalPin.P12, PinPullMode.PullNone);
+    pins.setPull(DigitalPin.P13, PinPullMode.PullNone);
     //% block="Line Tracking"
     //% group="Sensor" weight=68
     export function LineTracking(): number {
-        let val = pins.digitalReadPin(DigitalPin.P13) << 0 | pins.digitalReadPin(DigitalPin.P14) << 1;
+        let val = pins.digitalReadPin(DigitalPin.P12) << 0 | pins.digitalReadPin(DigitalPin.P13) << 1;
         return val;
     }
     /**
@@ -335,12 +333,12 @@ namespace k_Bit {
      */
     const TRIG_PIN = DigitalPin.P14;
     const ECHO_PIN = DigitalPin.P15;
+    pins.setPull(TRIG_PIN, PinPullMode.PullNone);
     let lastTime = 0;
     //% block="Ultrasonic"
     //% group="Sensor" weight=67
     export function ultra(): number {
         //send trig pulse
-        pins.setPull(TRIG_PIN, PinPullMode.PullNone);
         pins.digitalWritePin(TRIG_PIN, 0)
         control.waitMicros(2);
         pins.digitalWritePin(TRIG_PIN, 1)
