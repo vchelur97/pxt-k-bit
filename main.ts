@@ -169,21 +169,21 @@ namespace k_Bit {
         }
         let speed_value = Math.map(speed, 0, 100, 0, 4095);
         if (M == 0 && MD == 0) {
-            setPwm(3, 0, speed_value);  //control speed : 0---4095
-            setPwm(2, 0, 0);
-        }
-        if (M == 0 && MD == 1) {
-            setPwm(3, 0, speed_value);  //control speed : 0---4095
-            setPwm(2, 0, 4095);
-        }
-
-        if (M == 1 && MD == 0) {
             setPwm(1, 0, speed_value);  //control speed : 0---4095
             setPwm(0, 0, 0);
         }
-        if (M == 1 && MD == 1) {
+        if (M == 0 && MD == 1) {
             setPwm(1, 0, speed_value);  //control speed : 0---4095
             setPwm(0, 0, 4095);
+        }
+
+        if (M == 1 && MD == 0) {
+            setPwm(3, 0, speed_value);  //control speed : 0---4095
+            setPwm(2, 0, 0);
+        }
+        if (M == 1 && MD == 1) {
+            setPwm(3, 0, speed_value);  //control speed : 0---4095
+            setPwm(2, 0, 4095);
         }
 
     }
