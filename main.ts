@@ -190,7 +190,7 @@ namespace k_Bit {
     /**
      * set motor state
      */
-    //% block="motor $M stop"
+    //% block="$M motor stop"
     //% group="Motor" weight=96
     export function MotorSta(M: MotorObs) {
         if (!PCA9685_Initialized) {
