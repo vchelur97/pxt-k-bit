@@ -160,7 +160,7 @@ namespace k_Bit {
     /**
      * set speed of motor
      */
-    //% block="$M Motor run $MD speed: $speed \\%"
+    //% block="$M motor run $MD speed: $speed \\%"
     //% speed.min=0 speed.max=100
     //% group="Motor" weight=97
     export function Motor(M: MotorObs, MD: MotorDir, speed: number) {
