@@ -14,26 +14,25 @@ enum COLOR {
     black
 }
 /**
- * use for infrared obstacle sensor
- */
-enum OBS{
-    left = 0,
-    right = 1
-}
-/**
  * use for control motor
  */
 enum DIR {
-    run_forward = 0,
-    run_back = 1,
-    Turn_Left = 2,
-    Turn_Right = 3
+    RunForward = 0,
+    RunBack = 1,
+    TurnLeft = 2,
+    TurnRight = 3
 }
-enum MOTOR {
-    A = 0,
-    B = 1
+/**
+ * use for motor and infrared obstacle sensor
+ */
+enum MotorObs {
+    LeftSide = 0,
+    RightSide = 1
 }
-
+enum MotorDir {
+    Forward = 0,
+    Back = 1
+}
 //% color="#ff6800" icon="\uf1b9" weight=15
 //% groups="['Motor', 'RGB-led', 'Neo-pixel', 'Sensor', 'Tone']"
 namespace k_Bit {
@@ -147,46 +146,10 @@ namespace k_Bit {
         }
     }
     /**
-     * set speed of motor
-     */
-    //% block="Motor $M speed: $speed \\%"
-    //% speed.min=-100 speed.max=100
-    //% group="Motor" weight=98
-    export function Motor(M: MOTOR, speed: number) {
-        if (!PCA9685_Initialized) {
-            init_PCA9685();
-        }
-        let speed_value = Math.map(speed, -100, 100, -4095, 4095);
-        if (M == 0 && speed >= 0) {
-            setPwm(0, 0, speed_value);  //control speed : 0---4095
-            setPwm(1, 0, 0);
-            setPwm(2, 0, 4095);
-        }
-        if (M == 0 && speed < 0) {
-            speed_value = Math.abs(speed_value);
-            setPwm(0, 0, speed_value);  //control speed : 0---4095
-            setPwm(1, 0, 4095);
-            setPwm(2, 0, 0);
-        }
-
-        if (M == 1 && speed >= 0) {
-            setPwm(5, 0, speed_value);  //control speed : 0---4095
-            setPwm(4, 0, 0);
-            setPwm(3, 0, 4095);
-        }
-        if (M == 1 && speed < 0) {
-            speed_value = Math.abs(speed_value);
-            setPwm(5, 0, speed_value);  //control speed : 0---4095
-            setPwm(4, 0, 4095);
-            setPwm(3, 0, 0);
-        }
-
-    }
-    /**
      * set cat state
      */
     //% block="car stop"
-    //% group="Motor" weight=97
+    //% group="Motor" weight=98
     export function carStop() {
         if (!PCA9685_Initialized) {
         init_PCA9685();
@@ -195,11 +158,41 @@ namespace k_Bit {
         setPwm(3, 0, 0);  //control speed : 0---4095
     }
     /**
+     * set speed of motor
+     */
+    //% block="$M Motor run $MD speed: $speed \\%"
+    //% speed.min=0 speed.max=100
+    //% group="Motor" weight=97
+    export function Motor(M: MotorObs, MD: MotorDir, speed: number) {
+        if (!PCA9685_Initialized) {
+            init_PCA9685();
+        }
+        let speed_value = Math.map(speed, 0, 100, 0, 4095);
+        if (M == 0 && MD == 0) {
+            setPwm(3, 0, speed_value);  //control speed : 0---4095
+            setPwm(2, 0, 0);
+        }
+        if (M == 0 && MD == 1) {
+            setPwm(3, 0, speed_value);  //control speed : 0---4095
+            setPwm(2, 0, 4095);
+        }
+
+        if (M == 1 && MD == 0) {
+            setPwm(1, 0, speed_value);  //control speed : 0---4095
+            setPwm(0, 0, 0);
+        }
+        if (M == 1 && MD == 1) {
+            setPwm(1, 0, speed_value);  //control speed : 0---4095
+            setPwm(0, 0, 4095);
+        }
+
+    }
+    /**
      * set motor state
      */
     //% block="motor $M stop"
     //% group="Motor" weight=96
-    export function MotorSta(M: MOTOR) {
+    export function MotorSta(M: MotorObs) {
         if (!PCA9685_Initialized) {
             init_PCA9685();
         }
@@ -305,7 +298,7 @@ namespace k_Bit {
     pins.setPull(DigitalPin.P11, PinPullMode.PullNone);
     //% block="$LR obstacle sensor "
     //% group="Sensor" weight=69
-    export function obstacle(LR: OBS): number {
+    export function obstacle(LR: MotorObs): number {
         let val;
         if(LR == 0){  //left side
             val = pins.digitalReadPin(DigitalPin.P2);
