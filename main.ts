@@ -338,7 +338,9 @@ namespace k_Bit {
         control.waitMicros(10);
         pins.digitalWritePin(TRIG_PIN, 0)
 
-        // read echo pulse  max distance : 6m(35000us)  
+        // read echo pulse  max distance : 6m(35000us)
+        //2020-7-6 
+        // pins.pulseIn():This function is buggy and returns data with large errors.
         let t = pins.pulseIn(ECHO_PIN, PulseValue.High, 35000);
         let ret = t;
 
@@ -347,8 +349,9 @@ namespace k_Bit {
             ret = lastTime;
         }
         lastTime = t;
-
-        return Math.round(ret / 58);
+        //2020-7-6
+        //It would normally divide by 58, because the pins.pulseIn() function has an error, so it's divided by 58
+        return Math.round(ret / 40);  
     }
     /**
      * photoresistance sensor
