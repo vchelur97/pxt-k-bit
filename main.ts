@@ -340,7 +340,7 @@ namespace k_Bit {
 
         // read echo pulse  max distance : 6m(35000us)
         //2020-7-6 
-        // pins.pulseIn():This function is buggy and returns data with large errors.
+        // pins.pulseIn():This function has a bug and returns data with large errors.
         let t = pins.pulseIn(ECHO_PIN, PulseValue.High, 35000);
         let ret = t;
 
