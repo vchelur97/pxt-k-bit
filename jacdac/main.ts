@@ -53,13 +53,13 @@ namespace modules {
      * Keystudio Front LEDs
      */
     //% fixedInstance whenUsed block="keystudio front leds"
-    export const keyStudioFrontLEDs = new LedClient("keystudio front leds?dev=self&variant=Stick&srvo=2&num_pixels=1&leds_per_pixel=2&srvo=0")
+    export const keyStudioFrontLEDs = new LedClient("keystudio front leds?dev=self&variant=Stick&num_pixels=1&leds_per_pixel=2&srvo=0")
 
     /**
     * Keystudio LED Ring
      */
     //% fixedInstance whenUsed block="keystudio ring leds"
-    export const keyStudioRingLEDs = new LedClient("keystudio ring leds?dev=self&variant=Ring&srvo=2&num_pixels=18&srvo=1")
+    export const keyStudioRingLEDs = new LedClient("keystudio ring leds?dev=self&variant=Ring&num_pixels=18&srvo=1")
 }
 
 namespace servers {
