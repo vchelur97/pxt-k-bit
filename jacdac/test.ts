@@ -21,7 +21,7 @@ forever(() => {
     else led.unplot(4, 0)
     if (modules.keyStudioLineLeft.brightness() > 0) {
         led.plot(1, 1)
-        modules.keyStudioMotorLeft.run(100)
+        modules.keyStudioMotorLeft.run(99)
     }
     else { 
         led.unplot(1, 1)
@@ -29,7 +29,7 @@ forever(() => {
     }
     if (modules.keyStudioLineRight.brightness() > 0) {
         led.plot(3, 1)
-        modules.keyStudioMotorRight.run(100)
+        modules.keyStudioMotorRight.run(99)
     }
     else {
         led.unplot(3, 1)
