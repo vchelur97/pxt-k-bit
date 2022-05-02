@@ -8,7 +8,7 @@ const colors = [
 ]
 forever(() => {
     modules.keyStudioRingLEDs.setPixelColor(k % modules.keyStudioRingLEDs.numPixels(), colors[Math.idiv(k, modules.keyStudioRingLEDs.numPixels()) % colors.length])
-    if (modules.keyStudioObstacleLeft.brightness() > 0 || modules.keyStudioObstacleRight.brightness() > 0)
+    if (modules.keyStudioUltra.distance() < 0.05)
         modules.keyStudioFrontLEDs.setAll(0x0f0000)
     else
         modules.keyStudioFrontLEDs.setAll(0x00000f)
@@ -19,13 +19,14 @@ forever(() => {
     if (modules.keyStudioObstacleRight.brightness() > 0)
         led.plot(4, 0)
     else led.unplot(4, 0)
+
     if (modules.keyStudioLineLeft.brightness() > 0) {
         led.plot(1, 1)
         modules.keyStudioMotorLeft.run(99)
     }
     else { 
         led.unplot(1, 1)
-        modules.keyStudioMotorLeft.run(50)
+        modules.keyStudioMotorLeft.run(25)
     }
     if (modules.keyStudioLineRight.brightness() > 0) {
         led.plot(3, 1)
@@ -33,7 +34,7 @@ forever(() => {
     }
     else {
         led.unplot(3, 1)
-        modules.keyStudioMotorRight.run(50)
+        modules.keyStudioMotorRight.run(25)
     }
 
     k++
