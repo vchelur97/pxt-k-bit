@@ -10,7 +10,8 @@
         "jacdac-led": "github:microsoft/pxt-jacdac/led#v0.10.19",
         "jacdac-reflected-light": "github:microsoft/pxt-jacdac/reflected-light#v0.10.19",
         "jacdac-distance": "github:microsoft/pxt-jacdac/distance#v0.10.19",
-        "jacdac-led-server": "github:microsoft/pxt-jacdac/led-server#v0.10.19"
+        "jacdac-led-server": "github:microsoft/pxt-jacdac/led-server#v0.10.19",
+        "jacdac-motor": "github:microsoft/pxt-jacdac/motor#v0.10.19"
     },
     "files": [
         "main.ts",

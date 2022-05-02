@@ -5,11 +5,20 @@ namespace k_Bit {
 
 namespace modules {
     /**
+     * Left motor control
+     */
+    //% fixedInstance whenUsed block="keystudio motor left"
+    export const keyStudioMotorLeft = new MotorClient("keystudio motor left?dev=self&srvo=0")
+    /**
+     * Right motor control
+     */
+    //% fixedInstance whenUsed block="keystudio motor right"
+    export const keyStudioMotorRight = new MotorClient("keystudio motor right?dev=self&srvo=1")
+    /**
      * KeyStudio ultrasonic sensor
      */
     //% fixedInstance whenUsed block="keystudio ultrasonic sensor"
     export const keyStudioUltra = new DistanceClient("keystudio ultra?dev=self&variant=Ultrasonic")
-
     /**
      * Left motor obstacle sensor
      */
@@ -54,6 +63,34 @@ namespace modules {
 }
 
 namespace servers {
+    class SingleMotorServer extends jacdac.Server {
+        readonly motor: MotorObs
+        enabled = false
+        speed = 0
+
+        constructor(motor: MotorObs, options: jacdac.ServerOptions) {
+            super(jacdac.SRV_MOTOR, options)
+            this.motor = motor
+        }
+
+        handlePacket(pkt: jacdac.JDPacket) {
+            this.handleRegBool(pkt, jacdac.MotorReg.Reversible, true)
+
+            this.enabled = this.handleRegValue(pkt, jacdac.MotorReg.Enabled, jacdac.MotorRegPack.Enabled, this.enabled)
+            this.speed = this.handleRegValue(pkt, jacdac.MotorReg.Speed, jacdac.MotorRegPack.Speed, this.speed)
+
+            this.sync()
+        }
+
+        sync() {
+            if (!this.enabled) {
+                k_Bit.carStop()
+            } else {
+                k_Bit.Motor(this.motor, this.speed < 0 ? MotorDir.Back : MotorDir.Forward, Math.abs(this.speed) * 100)
+            }
+        }
+    }
+
     function start() {
         jacdac.productIdentifier = 0x355e28c5
         jacdac.deviceDescription = "KeyStudio Mini Smart Robot Car"
@@ -61,6 +98,8 @@ namespace servers {
             // also init i2c
             k_Bit.OFFLed()
             const servers = [
+                new SingleMotorServer(MotorObs.LeftSide, { instanceName: "ML" }),
+                new SingleMotorServer(MotorObs.RightSide, { instanceName: "MR" }),
                 jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE, jacdac.DistanceRegPack.Distance, () => k_Bit.ultra() / 100.0, { instanceName: "ultra", variant: jacdac.DistanceVariant.Ultrasonic }),
                 jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness, () => k_Bit.obstacle(MotorObs.LeftSide), { instanceName: "OL", variant: jacdac.ReflectedLightVariant.InfraredDigital }),
                 jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness, () => k_Bit.obstacle(MotorObs.RightSide), { instanceName: "OR", variant: jacdac.ReflectedLightVariant.InfraredDigital }),

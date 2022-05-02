@@ -19,12 +19,22 @@ forever(() => {
     if (modules.keyStudioObstacleRight.brightness() > 0)
         led.plot(4, 0)
     else led.unplot(4, 0)
-    if (modules.keyStudioLineLeft.brightness() > 0)
+    if (modules.keyStudioLineLeft.brightness() > 0) {
         led.plot(1, 1)
-    else led.unplot(1, 1)
-    if (modules.keyStudioLineRight.brightness() > 0)
+        modules.keyStudioMotorLeft.run(100)
+    }
+    else { 
+        led.unplot(1, 1)
+        modules.keyStudioMotorLeft.run(50)
+    }
+    if (modules.keyStudioLineRight.brightness() > 0) {
         led.plot(3, 1)
-    else led.unplot(3, 1)
+        modules.keyStudioMotorRight.run(100)
+    }
+    else {
+        led.unplot(3, 1)
+        modules.keyStudioMotorRight.run(50)
+    }
 
     k++
 })
