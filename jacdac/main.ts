@@ -2,6 +2,14 @@
 namespace k_Bit {
 
 }
+//% deprecated
+namespace neopixel {
+
+}
+//% deprecated
+namespace irRemote {
+
+}
 
 namespace modules {
     /**
