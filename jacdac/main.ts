@@ -95,34 +95,78 @@ namespace servers {
         jacdac.productIdentifier = 0x355e28c5
         jacdac.deviceDescription = "KeyStudio Mini Smart Robot Car"
         jacdac.startSelfServers(() => {
-            // also init i2c
-            k_Bit.OFFLed()
             const servers = [
-                new SingleMotorServer(MotorObs.LeftSide, { instanceName: "ML" }),
-                new SingleMotorServer(MotorObs.RightSide, { instanceName: "MR" }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE, jacdac.DistanceRegPack.Distance, () => k_Bit.ultra() / 100.0, { instanceName: "ultra", variant: jacdac.DistanceVariant.Ultrasonic }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness, () => k_Bit.obstacle(MotorObs.LeftSide), { instanceName: "OL", variant: jacdac.ReflectedLightVariant.InfraredDigital }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness, () => k_Bit.obstacle(MotorObs.RightSide), { instanceName: "OR", variant: jacdac.ReflectedLightVariant.InfraredDigital }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness, () => (k_Bit.LineTracking() & 0x01) ? 1 : 0, {
+                new SingleMotorServer(MotorObs.LeftSide, { 
+                    instanceName: "ML" ,
+                    statusCode: jacdac.SystemStatusCodes.Initializing,
+                }),
+                new SingleMotorServer(MotorObs.RightSide, { 
+                    instanceName: "MR",
+                    statusCode: jacdac.SystemStatusCodes.Initializing,
+                }),
+                jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE, jacdac.DistanceRegPack.Distance, 
+                    () => k_Bit.ultra() / 100.0, { 
+                    instanceName: "ultra", 
+                    variant: jacdac.DistanceVariant.Ultrasonic,
+                    statusCode: jacdac.SystemStatusCodes.Initializing 
+                }),
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                    () => k_Bit.obstacle(MotorObs.LeftSide) ? 0 : 0.99, {
+                    instanceName: "OL",
+                    variant: jacdac.ReflectedLightVariant.InfraredDigital,
+                    streamingInterval: 100,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
+                }),
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                    () => k_Bit.obstacle(MotorObs.RightSide) ? 0 : 0.99, {
+                    instanceName: "OR",
+                    variant: jacdac.ReflectedLightVariant.InfraredDigital,
+                    streamingInterval: 100,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
+                }),
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                    () => (k_Bit.LineTracking() & 1) ? 0.99 : 0, {
                     instanceName: "LL",
-                    variant: jacdac.ReflectedLightVariant.InfraredDigital
+                    variant: jacdac.ReflectedLightVariant.InfraredDigital,
+                    streamingInterval: 100,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness, () => (k_Bit.LineTracking() & 0x10) ? 1 : 0, {
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                    () => (k_Bit.LineTracking() & 2) ? 0.99 : 0, {
                     instanceName: "LR",
-                    variant: jacdac.ReflectedLightVariant.InfraredDigital
+                    variant: jacdac.ReflectedLightVariant.InfraredDigital,
+                    streamingInterval: 100,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_LIGHT_LEVEL, jacdac.LightLevelRegPack.LightLevel, () => Math.map(k_Bit.PH(), 0, 1024, 0, 1), { variant: jacdac.LightLevelVariant.PhotoResistor }),
+                jacdac.createSimpleSensorServer(jacdac.SRV_LIGHT_LEVEL, jacdac.LightLevelRegPack.LightLevel,
+                    () => Math.map(k_Bit.PH(), 0, 1024, 0, 0.99), {
+                    variant: jacdac.LightLevelVariant.PhotoResistor,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
+                }),
                 new jacdac.LedServer(1, jacdac.LedPixelLayout.RgbRgb, (p, b) => {
                     k_Bit.LED_brightness(b)
                     k_Bit.SetLed(p[0], p[1], p[2])
                 }, {
                     variant: jacdac.LedVariant.Stick,
-                    ledsPerPixel: 2
+                    ledsPerPixel: 2,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
                 new jacdac.LedServer(18, jacdac.LedPixelLayout.RgbGrb, (p, b) => light.sendWS2812BufferWithBrightness(p, DigitalPin.P5, b), {
-                    variant: jacdac.LedVariant.Ring
+                    variant: jacdac.LedVariant.Ring,
+                    statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
             ]
+
+            control.runInBackground(() => {
+                // also init i2c
+                k_Bit.OFFLed()
+                k_Bit.PH()
+                k_Bit.carStop()
+                k_Bit.ultra()
+                for (const server of servers)
+                    server.setStatusCode(jacdac.SystemStatusCodes.Ready)
+            })
+
             return servers
         })
     }
