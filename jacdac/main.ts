@@ -162,10 +162,12 @@ namespace servers {
                 }, {
                     variant: jacdac.LedVariant.Stick,
                     ledsPerPixel: 2,
+                    instanceName: "front leds",
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
                 new jacdac.LedServer(18, jacdac.LedPixelLayout.RgbGrb, (p, b) => light.sendWS2812BufferWithBrightness(p, DigitalPin.P5, b), {
                     variant: jacdac.LedVariant.Ring,
+                    instanceName: "top leds",
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
             ]
