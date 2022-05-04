@@ -79,6 +79,8 @@ namespace servers {
         constructor(motor: MotorObs, options: jacdac.ServerOptions) {
             super(jacdac.SRV_MOTOR, options)
             this.motor = motor
+
+            this.on(jacdac.CHANGE, () => this.sync())
         }
 
         handlePacket(pkt: jacdac.JDPacket) {
@@ -91,6 +93,9 @@ namespace servers {
         }
 
         sync() {
+            if (this.statusCode !== jacdac.SystemStatusCodes.Ready)
+                return
+
             if (!this.enabled) {
                 k_Bit.carStop()
             } else {
@@ -103,7 +108,7 @@ namespace servers {
         jacdac.productIdentifier = 0x355e28c5
         jacdac.deviceDescription = "KeyStudio Mini Smart Robot Car"
         jacdac.startSelfServers(() => {
-            const servers = [
+            const servers: jacdac.Server[] = [
                 new SingleMotorServer(MotorObs.LeftSide, { 
                     instanceName: "ML" ,
                     statusCode: jacdac.SystemStatusCodes.Initializing,
