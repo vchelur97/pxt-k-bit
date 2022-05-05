@@ -71,36 +71,15 @@ namespace modules {
 }
 
 namespace servers {
-    class SingleMotorServer extends jacdac.Server {
-        readonly motor: MotorObs
-        enabled = false
-        speed = 0
-
-        constructor(motor: MotorObs, options: jacdac.ServerOptions) {
-            super(jacdac.SRV_MOTOR, options)
-            this.motor = motor
-
-            this.on(jacdac.CHANGE, () => this.sync())
-        }
-
-        handlePacket(pkt: jacdac.JDPacket) {
-            this.handleRegBool(pkt, jacdac.MotorReg.Reversible, true)
-
-            this.enabled = this.handleRegValue(pkt, jacdac.MotorReg.Enabled, jacdac.MotorRegPack.Enabled, this.enabled)
-            this.speed = this.handleRegValue(pkt, jacdac.MotorReg.Speed, jacdac.MotorRegPack.Speed, this.speed)
-
-            this.sync()
-        }
-
-        sync() {
-            if (this.statusCode !== jacdac.SystemStatusCodes.Ready)
-                return
-
-            if (!this.enabled) {
-                k_Bit.carStop()
-            } else {
-                k_Bit.Motor(this.motor, this.speed < 0 ? MotorDir.Back : MotorDir.Forward, Math.abs(this.speed) * 100)
-            }
+    function sync(server: jacdac.ActuatorServer, motor: MotorObs) {
+        const enabled = !!server.intensity
+        if (!enabled) {
+            k_Bit.carStop()
+        } else {
+            const speed = server.value
+            k_Bit.Motor(motor,
+                speed < 0 ? MotorDir.Back : MotorDir.Forward,
+                Math.abs(speed) * 100)
         }
     }
 
@@ -109,19 +88,27 @@ namespace servers {
         jacdac.deviceDescription = "KeyStudio Mini Smart Robot Car"
         jacdac.startSelfServers(() => {
             const servers: jacdac.Server[] = [
-                new SingleMotorServer(MotorObs.LeftSide, { 
-                    instanceName: "ML" ,
+                jacdac.createActuatorServer(
+                    jacdac.SRV_MOTOR,
+                    jacdac.MotorRegPack.Speed,
+                    jacdac.MotorRegPack.Enabled,
+                    (server) => sync(server, MotorObs.LeftSide), {
+                    instanceName: "ML",
                     statusCode: jacdac.SystemStatusCodes.Initializing,
                 }),
-                new SingleMotorServer(MotorObs.RightSide, { 
+                jacdac.createActuatorServer(
+                    jacdac.SRV_MOTOR,
+                    jacdac.MotorRegPack.Speed,
+                    jacdac.MotorRegPack.Enabled,
+                    (server) => sync(server, MotorObs.RightSide), {
                     instanceName: "MR",
                     statusCode: jacdac.SystemStatusCodes.Initializing,
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE, jacdac.DistanceRegPack.Distance, 
-                    () => k_Bit.ultra() / 100.0, { 
-                    instanceName: "ultra", 
+                jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE, jacdac.DistanceRegPack.Distance,
+                    () => k_Bit.ultra() / 100.0, {
+                    instanceName: "ultra",
                     variant: jacdac.DistanceVariant.Ultrasonic,
-                    statusCode: jacdac.SystemStatusCodes.Initializing 
+                    statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
                 jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
                     () => k_Bit.obstacle(MotorObs.LeftSide) ? 0 : 0.99, {
