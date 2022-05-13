@@ -71,7 +71,7 @@ namespace modules {
 }
 
 namespace servers {
-    function sync(server: jacdac.ActuatorServer, motor: MotorObs) {
+    function sync(server: jacdac.Server, motor: MotorObs) {
         const enabled = !!server.intensity
         if (!enabled) {
             k_Bit.carStop()
@@ -90,55 +90,61 @@ namespace servers {
             const servers: jacdac.Server[] = [
                 jacdac.createActuatorServer(
                     jacdac.SRV_MOTOR,
-                    jacdac.MotorRegPack.Speed,
-                    jacdac.MotorRegPack.Enabled,
                     (server) => sync(server, MotorObs.LeftSide), {
                     instanceName: "ML",
+                    intensityPackFormat: jacdac.MotorRegPack.Enabled,
+                    valuePackFormat: jacdac.MotorRegPack.Speed,
                     statusCode: jacdac.SystemStatusCodes.Initializing,
                 }),
                 jacdac.createActuatorServer(
                     jacdac.SRV_MOTOR,
-                    jacdac.MotorRegPack.Speed,
-                    jacdac.MotorRegPack.Enabled,
                     (server) => sync(server, MotorObs.RightSide), {
                     instanceName: "MR",
+                    intensityPackFormat: jacdac.MotorRegPack.Enabled,
+                    valuePackFormat: jacdac.MotorRegPack.Speed,
                     statusCode: jacdac.SystemStatusCodes.Initializing,
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE, jacdac.DistanceRegPack.Distance,
+                jacdac.createSimpleSensorServer(jacdac.SRV_DISTANCE,
+                    jacdac.DistanceRegPack.Distance,
                     () => k_Bit.ultra() / 100.0, {
                     instanceName: "ultra",
                     variant: jacdac.DistanceVariant.Ultrasonic,
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT,
+                    jacdac.ReflectedLightRegPack.Brightness,
                     () => k_Bit.obstacle(MotorObs.LeftSide) ? 0 : 0.99, {
                     instanceName: "OL",
                     variant: jacdac.ReflectedLightVariant.InfraredDigital,
                     streamingInterval: 100,
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT,
+                    jacdac.ReflectedLightRegPack.Brightness,
                     () => k_Bit.obstacle(MotorObs.RightSide) ? 0 : 0.99, {
                     instanceName: "OR",
                     variant: jacdac.ReflectedLightVariant.InfraredDigital,
                     streamingInterval: 100,
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT,
+                    jacdac.ReflectedLightRegPack.Brightness,
                     () => (k_Bit.LineTracking() & 1) ? 0.99 : 0, {
                     instanceName: "LL",
                     variant: jacdac.ReflectedLightVariant.InfraredDigital,
                     streamingInterval: 100,
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT, jacdac.ReflectedLightRegPack.Brightness,
+                jacdac.createSimpleSensorServer(jacdac.SRV_REFLECTED_LIGHT,
+                    jacdac.ReflectedLightRegPack.Brightness,
                     () => (k_Bit.LineTracking() & 2) ? 0.99 : 0, {
                     instanceName: "LR",
                     variant: jacdac.ReflectedLightVariant.InfraredDigital,
                     streamingInterval: 100,
                     statusCode: jacdac.SystemStatusCodes.Initializing
                 }),
-                jacdac.createSimpleSensorServer(jacdac.SRV_LIGHT_LEVEL, jacdac.LightLevelRegPack.LightLevel,
+                jacdac.createSimpleSensorServer(jacdac.SRV_LIGHT_LEVEL,
+                    jacdac.LightLevelRegPack.LightLevel,
                     () => Math.map(k_Bit.PH(), 0, 1024, 0, 0.99), {
                     variant: jacdac.LightLevelVariant.PhotoResistor,
                     statusCode: jacdac.SystemStatusCodes.Initializing
