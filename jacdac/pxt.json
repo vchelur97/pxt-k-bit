@@ -6,13 +6,13 @@
         "radio": "*",
         "microphone": "*",
         "pxt-k-bit": "github:pelikhan/pxt-k-bit",
-        "jacdac": "github:microsoft/pxt-jacdac#v0.10.31",
-        "jacdac-light-level": "github:microsoft/pxt-jacdac/light-level#v0.10.31",
-        "jacdac-led": "github:microsoft/pxt-jacdac/led#v0.10.31",
-        "jacdac-reflected-light": "github:microsoft/pxt-jacdac/reflected-light#v0.10.31",
-        "jacdac-distance": "github:microsoft/pxt-jacdac/distance#v0.10.31",
-        "jacdac-led-server": "github:microsoft/pxt-jacdac/led-server#v0.10.31",
-        "jacdac-motor": "github:microsoft/pxt-jacdac/motor#v0.10.31"
+        "jacdac": "github:microsoft/pxt-jacdac#v0.10.41",
+        "jacdac-light-level": "github:microsoft/pxt-jacdac/light-level#v0.10.41",
+        "jacdac-led": "github:microsoft/pxt-jacdac/led#v0.10.41",
+        "jacdac-reflected-light": "github:microsoft/pxt-jacdac/reflected-light#v0.10.41",
+        "jacdac-distance": "github:microsoft/pxt-jacdac/distance#v0.10.41",
+        "jacdac-led-server": "github:microsoft/pxt-jacdac/led-server#v0.10.41",
+        "jacdac-motor": "github:microsoft/pxt-jacdac/motor#v0.10.41"
     },
     "files": [
         "main.ts",
@@ -22,7 +22,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "4.1.34",
+        "target": "4.1.44",
         "targetId": "microbit"
     },
     "supportedTargets": [
