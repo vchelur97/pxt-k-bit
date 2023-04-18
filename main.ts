@@ -13,6 +13,7 @@ enum COLOR {
     white,
     black
 }
+
 /**
  * use for control motor
  */
@@ -22,6 +23,7 @@ enum DIR {
     TurnLeft = 2,
     TurnRight = 3
 }
+
 /**
  * use for motor and infrared obstacle sensor
  */
@@ -29,10 +31,12 @@ enum MotorObs {
     LeftSide = 0,
     RightSide = 1
 }
+
 enum MotorDir {
     Forward = 0,
     Back = 1
 }
+
 //% color="#ff6800" icon="\uf1b9" weight=15
 //% groups="['Motor', 'RGB-led', 'Neo-pixel', 'Sensor', 'Tone']"
 namespace k_Bit {
@@ -107,7 +111,9 @@ namespace k_Bit {
 
     /////////////////////////////////////////////////////
     /**
-     * car run diretion
+     * Moves the car in the specified direction at the specified speed.
+     * @param direction direction of the car, eg: DIR.RunForward
+     * @param speed speed of the car (between 0 and 100), eg: 50
      */
     //% block="car $direction speed: $speed \\%"
     //% speed.min=0 speed.max=100
@@ -145,20 +151,25 @@ namespace k_Bit {
             default: break;
         }
     }
+
     /**
-     * set cat state
+     * Stops the car from moving.
      */
     //% block="car stop"
     //% group="Motor" weight=98
     export function carStop() {
         if (!PCA9685_Initialized) {
-        init_PCA9685();
+            init_PCA9685();
         }
         setPwm(1, 0, 0);  //control speed : 0---4095
         setPwm(3, 0, 0);  //control speed : 0---4095
     }
+
     /**
-     * set speed of motor
+     * Set the direction and speed of a specific motor
+     * @param M the motor to move, eg: MotorObs.LeftSide
+     * @param MD the direction of the motor, eg: MotorDir.Forward
+     * @param speed speed of the motor (between 0 and 100), eg: 50
      */
     //% block="$M motor run $MD speed: $speed \\%"
     //% speed.min=0 speed.max=100
@@ -185,10 +196,11 @@ namespace k_Bit {
             setPwm(3, 0, speed_value);  //control speed : 0---4095
             setPwm(2, 0, 4095);
         }
-
     }
+
     /**
-     * set motor state
+     * Stops a specific motor from moving.
+     * @param M the motor to stop, eg: MotorObs.RightSide
      */
     //% block="$M motor stop"
     //% group="Motor" weight=96
@@ -206,11 +218,13 @@ namespace k_Bit {
             setPwm(2, 0, 0);
         }
     }
+
     /////////////////////////////////////////////////////
-    /**
-     * set rgb-led brightness
-     */
     let L_brightness = 4095;  //control the rgb-led brightness
+    /**
+     * Set the maximum brightness of the RGB LED lights
+     * @param br the brightness of the RGB LED lights (between 0 and 255), eg: 255
+     */
     //% block="LED brightness $br"
     //% br.min=0 br.max=255
     //% group="RGB-led" weight=79
@@ -220,8 +234,10 @@ namespace k_Bit {
         }
         L_brightness = Math.map(br, 0, 255, 4095, 0);
     }
+
     /**
-     * set the rgb-led color via the color card
+     * Set the color of the RGB LED lights (red, green, blue, white, black)
+     * @param col the color of the RGB LED lights, eg: COLOR.red
      */
     //% block="set RGBled $col"
     //% group="RGB-led" weight=78
@@ -234,17 +250,17 @@ namespace k_Bit {
             setPwm(5, 0, 4095);
             setPwm(6, 0, L_brightness);
             setPwm(4, 0, 4095);
-            }
+        }
         if (col == COLOR.green) {
             setPwm(5, 0, L_brightness);
             setPwm(6, 0, 4095);
             setPwm(4, 0, 4095);
-            }
+        }
         if (col == COLOR.blue) {
             setPwm(5, 0, 4095);
             setPwm(6, 0, 4095);
             setPwm(4, 0, L_brightness);
-            }
+        }
         if (col == COLOR.white) {
             setPwm(5, 0, L_brightness);
             setPwm(6, 0, L_brightness);
@@ -256,8 +272,12 @@ namespace k_Bit {
             setPwm(4, 0, 4095);
         }
     }
+
     /**
-     * set the rgb-led color via data
+     * Set the color of the RGB LED lights with RGB values
+     * @param red the red value of the RGB LED lights (between 0 and 255), eg: 255
+     * @param green the green value of the RGB LED lights (between 0 and 255), eg: 255
+     * @param blue the blue value of the RGB LED lights (between 0 and 255), eg: 255
      */
     //% block=" set RGBled R:$red G:$green B:$blue"
     //% red.min=0 red.max=255 green.min=0 green.max=255 blue.min=0 blue.max=255
@@ -275,8 +295,9 @@ namespace k_Bit {
         setPwm(5, 0, G);
         setPwm(4, 0, B);
     }
+
     /**
-     * turn off all rgb-led
+     * Turn off the RGB LED lights
      */
     //% block="turn off RGB-led"
     //% group="RGB-led" weight=76
@@ -291,43 +312,48 @@ namespace k_Bit {
     }
 
     /////////////////////////////////////////////////////
-    /**
-     * infrared obstacle sensor
-     */
     pins.setPull(DigitalPin.P2, PinPullMode.PullNone);
     pins.setPull(DigitalPin.P11, PinPullMode.PullNone);
+    /**
+     * Infrared obstacle sensor
+     * @param LR the sensor on the left or right, eg: MotorObs.RightSide
+     * @return whether there is an obstacle or not (0 or 1)
+     */
     //% block="$LR obstacle sensor "
     //% group="Sensor" weight=69
     export function obstacle(LR: MotorObs): number {
         let val;
-        if(LR == 0){  //left side
+        if (LR == 0) {  //left side
             val = pins.digitalReadPin(DigitalPin.P2);
         }
-        if(LR == 1){  //right side
+        if (LR == 1) {  //right side
             val = pins.digitalReadPin(DigitalPin.P11);
         }
         return val;
     }
+
+    pins.setPull(DigitalPin.P12, PinPullMode.PullNone);
+    pins.setPull(DigitalPin.P13, PinPullMode.PullNone);
     /**
      * return 0b01 or 0b10
      * 0b01 is the sensor on the left
      * 0b10 is the sensor on the right
      */
-    pins.setPull(DigitalPin.P12, PinPullMode.PullNone);
-    pins.setPull(DigitalPin.P13, PinPullMode.PullNone);
     //% block="Line Tracking"
     //% group="Sensor" weight=68
     export function LineTracking(): number {
         let val = pins.digitalReadPin(DigitalPin.P12) << 0 | pins.digitalReadPin(DigitalPin.P13) << 1;
         return val;
     }
-    /**
-     * Ultrasonic sensor
-     */
+
     const TRIG_PIN = DigitalPin.P14;
     const ECHO_PIN = DigitalPin.P15;
     pins.setPull(TRIG_PIN, PinPullMode.PullNone);
     let lastTime = 0;
+    /**
+     * Ultrasonic sensor
+     * @return distance (cm)
+     */
     //% block="Ultrasonic"
     //% group="Sensor" weight=67
     export function ultra(): number {
@@ -351,14 +377,16 @@ namespace k_Bit {
         lastTime = t;
         //2020-7-6
         //It would normally divide by 58, because the pins.pulseIn() function has an error, so it's divided by 58
-        return Math.round(ret / 40);  
+        return Math.round(ret / 40);
     }
+
     /**
-     * photoresistance sensor
+     * Photoresistance sensor
+     * @return the value of the photoresistance sensor
      */
     //% block="photoresistor "
     //% group="Sensor" weight=66
     export function PH(): number {
-        return pins.analogReadPin(AnalogPin.P1);  
+        return pins.analogReadPin(AnalogPin.P1);
     }
 }
