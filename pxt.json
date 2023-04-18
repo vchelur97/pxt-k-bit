@@ -1,6 +1,6 @@
 {
     "name": "pxt-k-bit",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "keyestudio k-bit car for microbit",
     "dependencies": {
         "core": "*",
