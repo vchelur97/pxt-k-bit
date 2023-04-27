@@ -335,9 +335,13 @@ namespace k_Bit {
     pins.setPull(DigitalPin.P12, PinPullMode.PullNone);
     pins.setPull(DigitalPin.P13, PinPullMode.PullNone);
     /**
-     * return 0b01 or 0b10
-     * 0b01 is the sensor on the left
-     * 0b10 is the sensor on the right
+     * Returns 0 if both sensors don't detect a line,
+     * 1 if the left sensor detects a line,
+     * 2 if the right sensor detects a line,
+     * 3 if both sensors detect a line
+     * 
+     * 1 is the sensor on the left
+     * 2 is the sensor on the right
      */
     //% block="Line Tracking"
     //% group="Sensor" weight=68
