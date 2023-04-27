@@ -336,12 +336,12 @@ namespace k_Bit {
     pins.setPull(DigitalPin.P13, PinPullMode.PullNone);
     /**
      * Returns 0 if both sensors don't detect a line,
-     * 1 if the left sensor detects a line,
-     * 2 if the right sensor detects a line,
+     * 1 if there is a line on the right side when the robot is put down,
+     * 2 if there is a line on the left side when the robot is put down,
      * 3 if both sensors detect a line
      * 
-     * 1 is the sensor on the left
-     * 2 is the sensor on the right
+     * 1 is the sensor on the left when the robot is lifted up,
+     * 2 is the sensor on the right when the robot is lifted up
      */
     //% block="Line Tracking"
     //% group="Sensor" weight=68
